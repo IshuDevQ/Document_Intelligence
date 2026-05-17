@@ -5,6 +5,10 @@ A document image tampering detection system built using **OpenCV preprocessing**
 
 This project verifies whether an uploaded document image appears **authentic** or **tampered**.
 
+## GitHub Repository
+
+Project link: https://github.com/IshuDevQ/Document_Intelligence
+
 ---
 
 ## Features
@@ -134,11 +138,9 @@ The dataset itself is not pushed to GitHub because it is large.
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/document-intelligence-system.git
-cd document-intelligence-system
+git clone https://github.com/IshuDevQ/Document_Intelligence.git
+cd Document_Intelligence
 ```
-
-Replace `YOUR_USERNAME` with your GitHub username.
 
 ---
 
