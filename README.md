@@ -1,4 +1,3 @@
-
 # Document Intelligence System
 
 A document image tampering detection system built using **OpenCV preprocessing**, **Error Level Analysis (ELA)**, **OCR**, **handcrafted forensic features**, **Random Forest classification**, **FastAPI**, **SQLite**, and **Streamlit**.
@@ -133,48 +132,6 @@ The dataset itself is not pushed to GitHub because it is large.
 
 ---
 
-## Setup Instructions
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/IshuDevQ/Document_Intelligence.git
-cd Document_Intelligence
-```
-
----
-
-### 2. Create Virtual Environment
-
-```bash
-python -m venv venv
-```
-
-Activate it.
-
-#### Windows
-
-```bash
-venv\\Scripts\\activate
-```
-
-#### macOS / Linux
-
-```bash
-source venv/bin/activate
-```
-
----
-
-### 3. Install Python Dependencies
-
-```bash
-pip install --upgrade pip
-pip install -r requirements.txt
-```
-
----
-
 ## Install Tesseract OCR
 
 This project uses Tesseract for OCR extraction.
@@ -216,88 +173,6 @@ sudo apt install tesseract-ocr
 
 ```bash
 brew install tesseract
-```
-
----
-
-## Download and Prepare Dataset
-
-Run:
-
-```bash
-python download_dataset.py
-```
-
-After this, your dataset should be arranged like this:
-
-```text
-data/
-└── training_set/
-    ├── authentic/
-    │   ├── Au_*.jpg
-    │   └── ...
-    │
-    └── tampered/
-        ├── Tp_*.jpg
-        └── ...
-```
-
----
-
-## Train the Model
-
-Run:
-
-```bash
-python -m app.training.train
-```
-
-This will:
-
-1. Load images from `data/training_set/authentic/`
-2. Load images from `data/training_set/tampered/`
-3. Preprocess each image
-4. Generate ELA maps
-5. Extract 18 forensic features
-6. Train a Random Forest classifier
-7. Save the model to:
-
-```text
-app/models/classifier.pkl
-```
-
-It also stores model performance metrics in SQLite.
-
----
-
-## Run the FastAPI Backend
-
-Start the backend server:
-
-```bash
-uvicorn api.main:app --reload --port 8000
-```
-
-Open API documentation:
-
-```text
-http://localhost:8000/docs
-```
-
----
-
-## Run the Streamlit Frontend
-
-Open another terminal, activate the same virtual environment, then run:
-
-```bash
-streamlit run streamlit_app/app.py
-```
-
-Open the app:
-
-```text
-http://localhost:8501
 ```
 
 ---
@@ -413,6 +288,154 @@ For every uploaded document, the system returns:
 
 ---
 
+## Results
+
+
+The system produces three main types of results:
+
+### Training Result on CASIA 2.0
+
+The Random Forest model was trained on the CASIA 2.0 dataset after extracting 18 handcrafted forensic features from each image.
+
+```text
+Feature matrix shape: (12614, 18)
+Label vector shape: (12614,)
+Number of features: 18
+```
+
+The final model achieved the following performance on the test split:
+
+```text
+Accuracy: 0.6722156163297661
+```
+
+Classification report:
+
+```text
+              precision    recall  f1-score   support
+
+   authentic       0.71      0.76      0.73      1498
+    tampered       0.61      0.54      0.57      1025
+
+    accuracy                           0.67      2523
+   macro avg       0.66      0.65      0.65      2523
+weighted avg       0.67      0.67      0.67      2523
+```
+
+Confusion matrix:
+
+```text
+[[1143  355]
+ [ 472  553]]
+```
+
+This means:
+
+```text
+- 1143 authentic images were correctly classified as authentic.
+- 355 authentic images were incorrectly classified as tampered.
+- 472 tampered images were incorrectly classified as authentic.
+- 553 tampered images were correctly classified as tampered.
+```
+
+The trained model was saved successfully as:
+
+```text
+app/models/classifier.pkl
+```
+
+
+### 1. Document Verification Result
+
+Each uploaded document is classified as either:
+
+```text
+authentic
+tampered
+```
+
+The prediction includes:
+
+```text
+- predicted label
+- confidence score
+- authentic probability
+- tampered probability
+- uncertainty flag
+- OCR text
+- OCR confidence
+- ELA feature values
+- generated ELA map path
+- processing time
+```
+
+Example verdict:
+
+```text
+Tampered document detected with 91.00% confidence.
+```
+
+### 2. ELA Map Result
+
+For every uploaded image, the system generates an Error Level Analysis map and saves it in:
+
+```text
+data/results/
+```
+
+Example:
+
+```text
+data/results/ela_abc12345.png
+```
+
+The ELA map helps visualize regions that may have different compression behavior, which can indicate possible image manipulation.
+
+### 3. Model Performance Result
+
+After training, the system stores model performance metrics in SQLite and exposes them through the `/model-performance` endpoint.
+
+The stored metrics include:
+
+```text
+- accuracy
+- authentic precision
+- authentic recall
+- authentic F1-score
+- tampered precision
+- tampered recall
+- tampered F1-score
+- number of features
+- number of trees
+- training sample count
+- testing sample count
+```
+
+The Random Forest classifier uses 18 handcrafted forensic features and 200 decision trees.
+
+### 4. Verification History Result
+
+Every verification request is saved in SQLite with:
+
+```text
+- request ID
+- filename
+- predicted label
+- confidence
+- authentic probability
+- tampered probability
+- uncertainty status
+- ELA statistics
+- OCR text
+- OCR confidence
+- processing time
+- timestamp
+```
+
+This allows the system to maintain an audit history of document checks.
+
+---
+
 ## Files Not Pushed to GitHub
 
 The following files and folders should not be committed:
@@ -483,53 +506,9 @@ kaggle.json
 
 ---
 
-## How to Run Full Project
-
-Use this sequence:
-
-```bash
-python -m venv venv
-```
-
-Windows:
-
-```bash
-venv\\Scripts\\activate
-```
-
-macOS / Linux:
-
-```bash
-source venv/bin/activate
-```
-
-Then:
-
-```bash
-pip install -r requirements.txt
-python download_dataset.py
-python -m app.training.train
-uvicorn api.main:app --reload --port 8000
-```
-
-In another terminal:
-
-```bash
-streamlit run streamlit_app/app.py
-```
-
----
-
 ## Notes
 
 - The dataset is not included in the repository.
 - The trained model is not included in the repository.
 - The SQLite database is generated automatically.
 - ELA result images are generated automatically during verification.
-- You must train the model before using the `/verify` endpoint.
-
----
-
-## License
-
-This project is for educational and research purposes.
