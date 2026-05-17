@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# Dataset
+data/training_set/authentic/*
+data/training_set/tampered/*
+!data/training_set/authentic/.gitkeep
+!data/training_set/tampered/.gitkeep
+
+# Generated results
+data/results/*
+!data/results/.gitkeep
+
+# Model files
+app/models/*
+!app/models/.gitkeep
+
+# Database
+database/*.db
+database/*.sqlite
+database/*.sqlite3
+
+# Kaggle / credentials
+kaggle.json
+.env
+
+# OS/editor
+.DS_Store
+.vscode/
+.idea/
+
+# Streamlit
+.streamlit/secrets.toml

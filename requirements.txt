@@ -1,0 +1,14 @@
+fastapi
+uvicorn[standard]
+python-multipart
+pydantic
+Pillow
+numpy
+opencv-python
+scikit-learn
+pytesseract
+streamlit
+requests
+pandas
+joblib
+kagglehub
